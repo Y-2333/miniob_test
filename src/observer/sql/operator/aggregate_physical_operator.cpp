@@ -234,6 +234,13 @@ RC AggregatePhysicalOperator::next()
                 max_cells_[cell_idx] = cell_value;  
              }  
            }  
+           else if(attr_type == AttrType::DATES){
+            cell_flag = 2;
+            int date_value = cell.get_int();
+            if (date_value > max_cells[cell_idx]) {
+                max_cells[cell_idx] = date_value;
+            }
+           }
           break;
 
           case AggrOp::AGGR_MIN:
@@ -259,6 +266,13 @@ RC AggregatePhysicalOperator::next()
                 min_cells_[cell_idx] = cell_value;  
              }  
            } 
+           else if(attr_type == AttrType::DATES){
+            cell_flag = 2;
+            int date_value = cell.get_int();
+            if (date_value < min_cells[cell_idx]) {
+                min_cells[cell_idx] = date_value;
+            }
+           }
           break;
 
           case AggrOp::AGGR_COUNT:
@@ -294,9 +308,12 @@ RC AggregatePhysicalOperator::next()
     for (int cell_idx = 0; cell_idx < (int)aggregations_.size(); cell_idx++) {  
     if (aggregations_[cell_idx] == AggrOp::AGGR_MAX) {  
         const char *sp_cell = max_cells_[cell_idx].c_str();
-        if (cell_flag)
+        if (cell_flag==1)
         {
           result_cells[cell_idx].set_string(sp_cell);  
+        }
+        else if(cell_flag==2){
+          result_cells[cell_idx].set_date(max_cells[cell_idx]);  
         }
         else
         result_cells[cell_idx].set_float(max_cells[cell_idx]);  
@@ -309,9 +326,12 @@ RC AggregatePhysicalOperator::next()
     for (int cell_idx = 0; cell_idx < (int)aggregations_.size(); cell_idx++) {  
     if (aggregations_[cell_idx] == AggrOp::AGGR_MIN) {  
         const char *sp_cell = min_cells_[cell_idx].c_str();
-        if (cell_flag)
+        if (cell_flag==1)
         {
           result_cells[cell_idx].set_string(sp_cell);  
+        }
+        else if(cell_flag==2){
+          result_cells[cell_idx].set_date(min_cells[cell_idx]);  
         }
         else
         result_cells[cell_idx].set_float(min_cells[cell_idx]);  
