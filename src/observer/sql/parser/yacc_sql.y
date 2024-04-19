@@ -55,6 +55,12 @@ ArithmeticExpr *create_arithmetic_expression(ArithmeticExpr::Type type,
 
 //标识tokens
 %token  SEMICOLON
+        SUM_F
+        AVG_F
+        MAX_F
+        MIN_F
+        COUNT_F
+        COUNT_ALL
         CREATE
         DROP
         TABLE
@@ -106,6 +112,7 @@ ArithmeticExpr *create_arithmetic_expression(ArithmeticExpr::Type type,
   Value *                           value;
   enum CompOp                       comp;
   RelAttrSqlNode *                  rel_attr;
+  RelAttrSqlNode *                  rel_attr_aggr;
   std::vector<AttrInfoSqlNode> *    attr_infos;
   AttrInfoSqlNode *                 attr_info;
   Expression *                      expression;
@@ -113,10 +120,12 @@ ArithmeticExpr *create_arithmetic_expression(ArithmeticExpr::Type type,
   std::vector<Value> *              value_list;
   std::vector<ConditionSqlNode> *   condition_list;
   std::vector<RelAttrSqlNode> *     rel_attr_list;
+  std::vector<RelAttrSqlNode> *     rel_attr_aggr_list;
   std::vector<std::string> *        relation_list;
   char *                            string;
   int                               number;
   float                             floats;
+  enum AggrOp                      aggr_op;
 }
 
 %token <number> NUMBER
@@ -127,6 +136,9 @@ ArithmeticExpr *create_arithmetic_expression(ArithmeticExpr::Type type,
 //非终结符
 
 /** type 定义了各种解析后的结果输出的是什么类型。类型对应了 union 中的定义的成员变量名称 **/
+%type <aggr_op>             aggr_op
+%type <rel_attr>            rel_attr_aggr
+%type <rel_attr_list>       rel_attr_aggr_list
 %type <number>              type
 %type <condition>           condition
 %type <value>               value
@@ -516,6 +528,15 @@ select_attr:
     }
     ;
 
+aggr_op:
+    SUM_F{$$=AGGR_SUM;}
+    | AVG_F{$$=AGGR_AVG;}
+    | MAX_F{$$=AGGR_MAX;}
+    | MIN_F{$$=AGGR_MIN;}
+    | COUNT_F{$$=AGGR_COUNT;}
+    | COUNT_ALL{$$=AGGR_COUNT_ALL;}
+    ;
+
 rel_attr:
     ID {
       $$ = new RelAttrSqlNode;
@@ -529,7 +550,57 @@ rel_attr:
       free($1);
       free($3);
     }
+    | aggr_op LBRACE rel_attr_aggr rel_attr_aggr_list RBRACE{
+      $$ = $3;
+      $$->aggregation = $1;
+      if($4!=nullptr){
+        $$->valid=false;
+        delete $4;
+      }
+    }
+    | aggr_op LBRACE RBRACE{
+      $$=new RelAttrSqlNode;
+      $$->relation_name="";
+      $$->attribute_name="";
+      $$->aggregation=$1;
+      $$->valid=false;
+    }
     ;
+rel_attr_aggr:
+    '*'{
+      $$=new RelAttrSqlNode;
+      $$->relation_name="";
+      $$->attribute_name="*";
+    }
+    | ID{
+      $$=new RelAttrSqlNode;
+      $$->attribute_name=$1;
+      free($1);
+    }
+    | ID DOT ID {
+      $$ = new RelAttrSqlNode;
+      $$->relation_name  = $1;
+      $$->attribute_name = $3;
+      free($1);
+      free($3);
+    }
+    ;
+rel_attr_aggr_list:
+    /* empty */
+    {
+      $$ = nullptr;
+    }
+    | COMMA rel_attr_aggr rel_attr_aggr_list {
+      if ($3 != nullptr) {
+        $$ = $3;
+      } else {
+        $$ = new std::vector<RelAttrSqlNode>;
+      }
+      $$->emplace_back(*$2);
+      delete $2;
+    }
+    ;
+
 
 attr_list:
     /* empty */

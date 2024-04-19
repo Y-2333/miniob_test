@@ -23,6 +23,17 @@ See the Mulan PSL v2 for more details. */
 
 class Expression;
 
+enum AggrOp //field
+{
+  AGGR_NONE,
+  AGGR_SUM,
+  AGGR_AVG,
+  AGGR_MAX,
+  AGGR_MIN,
+  AGGR_COUNT,
+  AGGR_COUNT_ALL
+};
+
 /**
  * @defgroup SQLParser SQL Parser 
  */
@@ -38,7 +49,10 @@ struct RelAttrSqlNode
 {
   std::string relation_name;   ///< relation name (may be NULL) 表名
   std::string attribute_name;  ///< attribute name              属性名
+  AggrOp      aggregation=AGGR_NONE;//聚合操作
+  bool valid =true;//判断聚合操作是否合法
 };
+
 
 /**
  * @brief 描述比较运算符

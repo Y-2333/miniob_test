@@ -50,55 +50,61 @@ extern int yydebug;
   enum yytokentype
   {
     SEMICOLON = 258,
-    CREATE = 259,
-    DROP = 260,
-    TABLE = 261,
-    TABLES = 262,
-    INDEX = 263,
-    CALC = 264,
-    SELECT = 265,
-    DESC = 266,
-    SHOW = 267,
-    SYNC = 268,
-    INSERT = 269,
-    DELETE = 270,
-    UPDATE = 271,
-    LBRACE = 272,
-    RBRACE = 273,
-    COMMA = 274,
-    TRX_BEGIN = 275,
-    TRX_COMMIT = 276,
-    TRX_ROLLBACK = 277,
-    INT_T = 278,
-    DATE_T = 279,
-    STRING_T = 280,
-    FLOAT_T = 281,
-    HELP = 282,
-    EXIT = 283,
-    DOT = 284,
-    INTO = 285,
-    VALUES = 286,
-    FROM = 287,
-    WHERE = 288,
-    AND = 289,
-    SET = 290,
-    ON = 291,
-    LOAD = 292,
-    DATA = 293,
-    INFILE = 294,
-    EXPLAIN = 295,
-    EQ = 296,
-    LT = 297,
-    GT = 298,
-    LE = 299,
-    GE = 300,
-    NE = 301,
-    NUMBER = 302,
-    FLOAT = 303,
-    ID = 304,
-    DATE_STR = 305,
-    SSS = 306,
-    UMINUS = 307
+    SUM_F = 259,
+    AVG_F = 260,
+    MAX_F = 261,
+    MIN_F = 262,
+    COUNT_F = 263,
+    COUNT_ALL = 264,
+    CREATE = 265,
+    DROP = 266,
+    TABLE = 267,
+    TABLES = 268,
+    INDEX = 269,
+    CALC = 270,
+    SELECT = 271,
+    DESC = 272,
+    SHOW = 273,
+    SYNC = 274,
+    INSERT = 275,
+    DELETE = 276,
+    UPDATE = 277,
+    LBRACE = 278,
+    RBRACE = 279,
+    COMMA = 280,
+    TRX_BEGIN = 281,
+    TRX_COMMIT = 282,
+    TRX_ROLLBACK = 283,
+    INT_T = 284,
+    DATE_T = 285,
+    STRING_T = 286,
+    FLOAT_T = 287,
+    HELP = 288,
+    EXIT = 289,
+    DOT = 290,
+    INTO = 291,
+    VALUES = 292,
+    FROM = 293,
+    WHERE = 294,
+    AND = 295,
+    SET = 296,
+    ON = 297,
+    LOAD = 298,
+    DATA = 299,
+    INFILE = 300,
+    EXPLAIN = 301,
+    EQ = 302,
+    LT = 303,
+    GT = 304,
+    LE = 305,
+    GE = 306,
+    NE = 307,
+    NUMBER = 308,
+    FLOAT = 309,
+    ID = 310,
+    DATE_STR = 311,
+    SSS = 312,
+    UMINUS = 313
   };
 #endif
 
@@ -106,13 +112,14 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 103 "yacc_sql.y"
+#line 109 "yacc_sql.y"
 
   ParsedSqlNode *                   sql_node;
   ConditionSqlNode *                condition;
   Value *                           value;
   enum CompOp                       comp;
   RelAttrSqlNode *                  rel_attr;
+  RelAttrSqlNode *                  rel_attr_aggr;
   std::vector<AttrInfoSqlNode> *    attr_infos;
   AttrInfoSqlNode *                 attr_info;
   Expression *                      expression;
@@ -120,12 +127,14 @@ union YYSTYPE
   std::vector<Value> *              value_list;
   std::vector<ConditionSqlNode> *   condition_list;
   std::vector<RelAttrSqlNode> *     rel_attr_list;
+  std::vector<RelAttrSqlNode> *     rel_attr_aggr_list;
   std::vector<std::string> *        relation_list;
   char *                            string;
   int                               number;
   float                             floats;
+  enum AggrOp                      aggr_op;
 
-#line 129 "yacc_sql.hpp"
+#line 138 "yacc_sql.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;

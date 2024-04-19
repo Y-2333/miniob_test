@@ -156,8 +156,5 @@ RC FilterStmt::create_filter_unit(Db *db, Table *default_table, std::unordered_m
         return rc;
       }
     }
-
-
-  // 检查两个类型是否能够比较
   return rc;
 }

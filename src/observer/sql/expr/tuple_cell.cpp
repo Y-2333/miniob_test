@@ -19,13 +19,55 @@ See the Mulan PSL v2 for more details. */
 #include "common/lang/comparator.h"
 #include "common/lang/string.h"
 
-TupleCellSpec::TupleCellSpec(const char *table_name, const char *field_name, const char *alias)
+std::string aggr_to_string(const AggrOp& op) {
+  switch(op) {
+    //case AggrOp::AGGR_NONE: return "NONE";
+    case AggrOp::AGGR_SUM: return "SUM";
+    case AggrOp::AGGR_AVG: return "AVG";
+    case AggrOp::AGGR_COUNT: return "COUNT";
+    case AggrOp::AGGR_COUNT_ALL: return "COUNT(*)"; // 特殊情况
+    case AggrOp::AGGR_MAX: return "MAX";
+    case AggrOp::AGGR_MIN: return "MIN";
+    default: return "";
+  }
+}
+
+// TupleCellSpec::TupleCellSpec(const char *table_name, const char *field_name, const char *alias)
+// {
+//   if (table_name) {
+//     table_name_ = table_name;
+//   }
+//   if (field_name) {
+//     field_name_ = field_name;
+//   }
+//   if (alias) {
+//     alias_ = alias;
+//   } else {
+//     if (table_name_.empty()) {
+//       alias_ = field_name_;
+//     } else {
+//       alias_ = table_name_ + "." + field_name_;
+//     }
+//   }
+// }
+
+// TupleCellSpec::TupleCellSpec(const char *alias)
+// {
+//   if (alias) {
+//     alias_ = alias;
+//   }
+// }
+
+TupleCellSpec::TupleCellSpec(const char *table_name, const char *field_name, const char *alias,const AggrOp aggr)
 {
   if (table_name) {
     table_name_ = table_name;
   }
   if (field_name) {
     field_name_ = field_name;
+  }
+  if(aggr){
+    aggr_=aggr;
   }
   if (alias) {
     alias_ = alias;
@@ -35,12 +77,52 @@ TupleCellSpec::TupleCellSpec(const char *table_name, const char *field_name, con
     } else {
       alias_ = table_name_ + "." + field_name_;
     }
+
+    // if(aggr_== AggrOp::AGGR_COUNT_ALL){
+    // alias_="COUNT(*)";
+    // }else if(aggr_!=AggrOp::AGGR_NONE){
+    //   std::string aggr_repr=aggr_to_string(aggr_);
+    //   alias_=aggr_repr+"("+alias+")";
+
+    // }
+    if(aggr!=AggrOp::AGGR_NONE)
+    {
+      if (aggr_== AggrOp::AGGR_COUNT_ALL)
+         alias_ = "COUNT(*)";
+         else
+         {
+           std::string aggr_repr=aggr_to_string(aggr_);
+           alias_=aggr_repr+"("+alias_+")";
+         }
+    }
+
   }
 }
 
-TupleCellSpec::TupleCellSpec(const char *alias)
+TupleCellSpec::TupleCellSpec(const char *alias,const AggrOp aggr)
 {
+  if(aggr){
+    aggr_=aggr;
+  }
   if (alias) {
     alias_ = alias;
+  // if(aggr_== AggrOp::AGGR_COUNT_ALL){
+  //   alias_="COUNT(*)";
+  //   }else if(aggr_!=AggrOp::AGGR_NONE){
+  //     std::string aggr_repr=aggr_to_string(aggr_);
+  //     alias_=aggr_repr+"("+alias+")";
+
+  //   }  
+  if(aggr!=AggrOp::AGGR_NONE)
+    {
+      if (aggr_== AggrOp::AGGR_COUNT_ALL)
+         alias_ = "COUNT(*)";
+         else
+         {
+           std::string aggr_repr=aggr_to_string(aggr_);
+           alias_=aggr_repr+"("+alias_+")";
+         }
+    }
   }
 }
+

@@ -21,6 +21,7 @@ See the Mulan PSL v2 for more details. */
 #include "storage/field/field.h"
 #include "sql/parser/value.h"
 #include "common/log/log.h"
+#include "sql/parser/parse_defs.h" 
 
 class Tuple;
 

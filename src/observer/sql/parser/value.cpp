@@ -58,7 +58,7 @@ Value::Value(const char *s, int len /*= 0*/)
   set_string(s, len);
 }
 
-Value::Value(const char *date,int len,int flag)//flag to qufeng upper string
+Value::Value(const char *date,int len,int flag)//flag to distinguish upper string
 {
   int intDate=0;
   strDate_to_intDate_(date,intDate);
