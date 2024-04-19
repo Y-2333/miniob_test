@@ -140,221 +140,314 @@ RC AggregatePhysicalOperator::open(Trx *trx)
 //   return rc;
 // }
 
+// RC AggregatePhysicalOperator::next()
+// {
+//   // already aggregated
+//   if (result_tuple_.cell_num() > 0) {
+//     return RC ::RECORD_EOF;
+//   }
+//   RC                 rc   = RC ::SUCCESS;
+//   PhysicalOperator  *oper = children_[0].get();
+//   int                opnumber = (int)aggregations_.size();
+//   std::vector<Value> result_cells(opnumber);
+//   int cell_flag = 0;
+  
+//   // 先在此处对result_cells进行初始化，后续功能自行添加
+//   for(int i = 0; i < opnumber; i++) 
+//   {
+//     const AggrOp aggregation = aggregations_[i];
+//     if (aggregation == AggrOp::AGGR_SUM) 
+//     {
+//       result_cells[i].set_type(AttrType::FLOATS);
+//       result_cells[i].set_float(0.0);
+//     }
+//   }
+
+//   std::vector<Value> sum_cells(opnumber);
+//           for(int i = 0; i < opnumber; i++) 
+//           {
+//             const AggrOp aggregation_ = aggregations_[i];    
+//             if(aggregation_ == AggrOp::AGGR_AVG)   
+//             {
+//             sum_cells[i].set_type(AttrType::FLOATS);
+//             sum_cells[i].set_float(0.0);   
+//             }        
+//           }
+//   std::vector<int> count_cells(aggregations_.size(),0);
+
+//   std::vector<double> max_cells(aggregations_.size(),-std::numeric_limits<double>::infinity());
+//   std::vector<string> max_cells_(opnumber,"");
+
+//   std::vector<double> min_cells(aggregations_.size(),std::numeric_limits<double>::infinity());
+//   std::vector<string> min_cells_(opnumber,"");
+
+//   std::string result_string;
+
+//   int my_index = 0;
+          
+//   while (RC ::SUCCESS == (rc = oper->next())) {
+//     // get tuple
+//     Tuple *tuple = oper->current_tuple();
+
+//     // do aggregate
+//     for (int cell_idx = 0; cell_idx < (int)aggregations_.size(); cell_idx++) {
+//       const AggrOp aggregation = aggregations_[cell_idx];
+//       Value        cell;
+//       AttrType     attr_type = AttrType::INTS;
+//       switch (aggregation) {
+//         case AggrOp::AGGR_SUM:
+//           rc        = tuple->cell_at(cell_idx, cell);
+//           attr_type = cell.attr_type();
+//           if (attr_type == AttrType ::INTS or attr_type == AttrType ::FLOATS) {
+//             result_cells[cell_idx].set_float(result_cells[cell_idx].get_float() + cell.get_float());
+//           }
+//           break;
+
+//           case AggrOp::AGGR_AVG:
+//           rc        = tuple->cell_at(cell_idx, cell);
+//           attr_type = cell.attr_type();
+//          // cell_flag = 1;
+//           if (attr_type == AttrType ::INTS or attr_type == AttrType ::FLOATS)
+//           {
+//             sum_cells[cell_idx].set_float(sum_cells[cell_idx].get_float() + cell.get_float());  
+//             count_cells[cell_idx]++;  
+            
+//           }
+//           break;
+
+//           case AggrOp::AGGR_MAX:
+//           rc        = tuple->cell_at(cell_idx, cell);
+//           attr_type = cell.attr_type();
+//         //  cell_flag = 2;
+//           if (attr_type == AttrType ::INTS or attr_type == AttrType ::FLOATS )
+//           {
+//             double cell_value = (attr_type == AttrType::INTS) ? static_cast<double>(cell.get_int()) : cell.get_float();
+//             if (cell_value > max_cells[cell_idx])
+//             {
+//               max_cells[cell_idx] = cell_value;
+//             }
+//           }
+//            else if (attr_type == AttrType::CHARS) {  
+//             cell_flag = 1;
+//             std::string cell_value = cell.get_string();  
+//             if (cell_value > max_cells_[cell_idx]) {  
+//                 max_cells_[cell_idx] = cell_value;  
+//              }  
+//            }  
+//            else if(attr_type == AttrType::DATES){
+//             cell_flag = 2;
+//             int date_value = cell.get_int();
+//             if (date_value > max_cells[cell_idx]) {
+//                 max_cells[cell_idx] = date_value;
+//             }
+//            }
+//           break;
+
+//           case AggrOp::AGGR_MIN:
+//           rc        = tuple->cell_at(cell_idx, cell);
+//           attr_type = cell.attr_type();
+//           //cell_flag = 3;
+//           if (attr_type == AttrType ::INTS or attr_type == AttrType ::FLOATS )
+//           {
+//             double cell_value = (attr_type == AttrType::INTS) ? static_cast<double>(cell.get_int()) : cell.get_float();
+//             if (cell_value < min_cells[cell_idx])
+//             {
+//               min_cells[cell_idx] = cell_value;
+//             }
+//           }
+//            else if (attr_type == AttrType::CHARS) {  
+//             cell_flag = 1;
+//              std::string cell_value = cell.get_string();  
+//              if (my_index == 0)
+//              {
+//               min_cells_[my_index] = cell_value;  
+//              }
+//             if (cell_value < min_cells_[cell_idx] ) {  
+//                 min_cells_[cell_idx] = cell_value;  
+//              }  
+//            } 
+//            else if(attr_type == AttrType::DATES){
+//             cell_flag = 2;
+//             int date_value = cell.get_int();
+//             if (date_value < min_cells[cell_idx]) {
+//                 min_cells[cell_idx] = date_value;
+//             }
+//            }
+//           break;
+
+//           case AggrOp::AGGR_COUNT:
+//           rc        = tuple->cell_at(cell_idx, cell);
+//           attr_type = cell.attr_type();
+//           //cell_flag = 4;
+//           count_cells[cell_idx]++;  
+//           break;
+
+//           case AggrOp::AGGR_COUNT_ALL:
+//           rc        = tuple->cell_at(cell_idx, cell);
+//           attr_type = cell.attr_type();
+//           //cell_flag = 4;
+//           count_cells[cell_idx]++;  
+//           break;
+
+//         default: return RC::UNIMPLENMENT;
+//       }
+//     }
+//     my_index++;
+//   }
+//   //if(cell_flag == 1)
+//   {
+//     for (int cell_idx = 0; cell_idx < (int)aggregations_.size(); cell_idx++) {  
+//                 if (count_cells[cell_idx] > 0) 
+//                 {  
+//                      result_cells[cell_idx].set_float(sum_cells[cell_idx].get_float() / count_cells[cell_idx]);  
+//                 }
+//                }
+//   }
+//   //if (cell_flag == 2)
+//   {
+//     for (int cell_idx = 0; cell_idx < (int)aggregations_.size(); cell_idx++) {  
+//     if (aggregations_[cell_idx] == AggrOp::AGGR_MAX) {  
+//         const char *sp_cell = max_cells_[cell_idx].c_str();
+//         if (cell_flag==1)
+//         {
+//           result_cells[cell_idx].set_string(sp_cell);  
+//         }
+//         else if(cell_flag==2){
+//           result_cells[cell_idx].set_date(max_cells[cell_idx]);  
+//         }
+//         else
+//         result_cells[cell_idx].set_float(max_cells[cell_idx]);  
+//        }  
+//    }
+//   }
+
+//   //if (cell_flag == 3)
+//   {
+//     for (int cell_idx = 0; cell_idx < (int)aggregations_.size(); cell_idx++) {  
+//     if (aggregations_[cell_idx] == AggrOp::AGGR_MIN) {  
+//         const char *sp_cell = min_cells_[cell_idx].c_str();
+//         if (cell_flag==1)
+//         {
+//           result_cells[cell_idx].set_string(sp_cell);  
+//         }
+//         else if(cell_flag==2){
+//           result_cells[cell_idx].set_date(min_cells[cell_idx]);  
+//         }
+//         else
+//         result_cells[cell_idx].set_float(min_cells[cell_idx]);  
+//        }  
+//    }
+//   }
+
+//   //if (cell_flag == 4)
+//   {
+//     for (int cell_idx = 0; cell_idx < (int)aggregations_.size(); cell_idx++) {  
+//     if (aggregations_[cell_idx] == AggrOp::AGGR_COUNT or aggregations_[cell_idx] == AggrOp::AGGR_COUNT_ALL) {  
+//         result_cells[cell_idx].set_float(count_cells[cell_idx]);  
+//        }  
+//    }
+//   }
+
+//   if (rc == RC ::RECORD_EOF) {
+//     rc = RC ::SUCCESS;
+//   }
+//   result_tuple_.set_cells(result_cells);
+//   return rc;
+// }
+
 RC AggregatePhysicalOperator::next()
 {
   // already aggregated
   if (result_tuple_.cell_num() > 0) {
-    return RC ::RECORD_EOF;
-  }
-  RC                 rc   = RC ::SUCCESS;
-  PhysicalOperator  *oper = children_[0].get();
-  int                opnumber = (int)aggregations_.size();
-  std::vector<Value> result_cells(opnumber);
-  int cell_flag = 0;
-  
-  // 先在此处对result_cells进行初始化，后续功能自行添加
-  for(int i = 0; i < opnumber; i++) 
-  {
-    const AggrOp aggregation = aggregations_[i];
-    if (aggregation == AggrOp::AGGR_SUM) 
-    {
-      result_cells[i].set_type(AttrType::FLOATS);
-      result_cells[i].set_float(0.0);
-    }
+    LOG_TRACE("already aggregated and return");
+    return RC::RECORD_EOF;
   }
 
-  std::vector<Value> sum_cells(opnumber);
-          for(int i = 0; i < opnumber; i++) 
-          {
-            const AggrOp aggregation_ = aggregations_[i];    
-            if(aggregation_ == AggrOp::AGGR_AVG)   
-            {
-            sum_cells[i].set_type(AttrType::FLOATS);
-            sum_cells[i].set_float(0.0);   
-            }        
-          }
-  std::vector<int> count_cells(aggregations_.size(),0);
+  RC rc = RC::SUCCESS;
+  PhysicalOperator *oper = children_[0].get();
 
-  std::vector<double> max_cells(aggregations_.size(),-std::numeric_limits<double>::infinity());
-  std::vector<string> max_cells_(opnumber,"");
-
-  std::vector<double> min_cells(aggregations_.size(),std::numeric_limits<double>::infinity());
-  std::vector<string> min_cells_(opnumber,"");
-
-  std::string result_string;
-
-  int my_index = 0;
-          
-  while (RC ::SUCCESS == (rc = oper->next())) {
+  int count = 0;
+  std::vector<Value> result_cells;
+  // collect filtered tuples
+  while (RC::SUCCESS == (rc = oper->next())) {
     // get tuple
     Tuple *tuple = oper->current_tuple();
+    LOG_TRACE("got tuple: %s", tuple->to_string().c_str());
 
     // do aggregate
-    for (int cell_idx = 0; cell_idx < (int)aggregations_.size(); cell_idx++) {
+    for (int cell_idx = 0; cell_idx < aggregations_.size(); cell_idx++) {
       const AggrOp aggregation = aggregations_[cell_idx];
-      Value        cell;
-      AttrType     attr_type = AttrType::INTS;
+
+      Value cell;
+      AttrType attr_type = AttrType::INTS;
       switch (aggregation) {
+        case AggrOp::AGGR_COUNT:
+        case AggrOp::AGGR_COUNT_ALL:
+          if (count == 0) {
+            result_cells.push_back(Value(0));
+            LOG_TRACE("init count. count=0");
+          }
+          result_cells[cell_idx].set_int(result_cells[cell_idx].get_int() + 1);
+          LOG_TRACE("update count. count=%s", result_cells[cell_idx].to_string().c_str());
+          break;
+        case AggrOp::AGGR_MAX:
+          rc = tuple->cell_at(cell_idx, cell);
+          if (count == 0) {
+            result_cells.push_back(cell);
+            LOG_TRACE("init max. max=%s", result_cells[cell_idx].to_string().c_str());
+          } else if (cell.compare(result_cells[cell_idx]) > 0) {
+            result_cells[cell_idx] = cell;
+            LOG_TRACE("update max. max=%s", result_cells[cell_idx].to_string().c_str());
+          }
+          break;
+        case AggrOp::AGGR_MIN:
+          rc = tuple->cell_at(cell_idx, cell);
+          if (count == 0) {
+            result_cells.push_back(cell);
+            LOG_TRACE("init min. min=%s", result_cells[cell_idx].to_string().c_str());
+          } else if (cell.compare(result_cells[cell_idx]) < 0) {
+            result_cells[cell_idx] = cell;
+            LOG_TRACE("update min. min=%s", result_cells[cell_idx].to_string().c_str());
+          }
+          break;
         case AggrOp::AGGR_SUM:
-          rc        = tuple->cell_at(cell_idx, cell);
+        case AggrOp::AGGR_AVG:
+          rc = tuple->cell_at(cell_idx, cell);
           attr_type = cell.attr_type();
-          if (attr_type == AttrType ::INTS or attr_type == AttrType ::FLOATS) {
+          if (count == 0) {
+            result_cells.push_back(Value(0.0f));
+            LOG_TRACE("init sum/avg. sum=%s", result_cells[cell_idx].to_string().c_str());
+          }
+          if (attr_type == AttrType::INTS or attr_type == AttrType::FLOATS) {
             result_cells[cell_idx].set_float(result_cells[cell_idx].get_float() + cell.get_float());
+            LOG_TRACE("update sum/avg. sum=%s", result_cells[cell_idx].to_string().c_str());
           }
           break;
-
-          case AggrOp::AGGR_AVG:
-          rc        = tuple->cell_at(cell_idx, cell);
-          attr_type = cell.attr_type();
-         // cell_flag = 1;
-          if (attr_type == AttrType ::INTS or attr_type == AttrType ::FLOATS)
-          {
-            sum_cells[cell_idx].set_float(sum_cells[cell_idx].get_float() + cell.get_float());  
-            count_cells[cell_idx]++;  
-            
-          }
-          break;
-
-          case AggrOp::AGGR_MAX:
-          rc        = tuple->cell_at(cell_idx, cell);
-          attr_type = cell.attr_type();
-        //  cell_flag = 2;
-          if (attr_type == AttrType ::INTS or attr_type == AttrType ::FLOATS )
-          {
-            double cell_value = (attr_type == AttrType::INTS) ? static_cast<double>(cell.get_int()) : cell.get_float();
-            if (cell_value > max_cells[cell_idx])
-            {
-              max_cells[cell_idx] = cell_value;
-            }
-          }
-           else if (attr_type == AttrType::CHARS) {  
-            cell_flag = 1;
-            std::string cell_value = cell.get_string();  
-            if (cell_value > max_cells_[cell_idx]) {  
-                max_cells_[cell_idx] = cell_value;  
-             }  
-           }  
-           else if(attr_type == AttrType::DATES){
-            cell_flag = 2;
-            int date_value = cell.get_int();
-            if (date_value > max_cells[cell_idx]) {
-                max_cells[cell_idx] = date_value;
-            }
-           }
-          break;
-
-          case AggrOp::AGGR_MIN:
-          rc        = tuple->cell_at(cell_idx, cell);
-          attr_type = cell.attr_type();
-          //cell_flag = 3;
-          if (attr_type == AttrType ::INTS or attr_type == AttrType ::FLOATS )
-          {
-            double cell_value = (attr_type == AttrType::INTS) ? static_cast<double>(cell.get_int()) : cell.get_float();
-            if (cell_value < min_cells[cell_idx])
-            {
-              min_cells[cell_idx] = cell_value;
-            }
-          }
-           else if (attr_type == AttrType::CHARS) {  
-            cell_flag = 1;
-             std::string cell_value = cell.get_string();  
-             if (my_index == 0)
-             {
-              min_cells_[my_index] = cell_value;  
-             }
-            if (cell_value < min_cells_[cell_idx] ) {  
-                min_cells_[cell_idx] = cell_value;  
-             }  
-           } 
-           else if(attr_type == AttrType::DATES){
-            cell_flag = 2;
-            int date_value = cell.get_int();
-            if (date_value < min_cells[cell_idx]) {
-                min_cells[cell_idx] = date_value;
-            }
-           }
-          break;
-
-          case AggrOp::AGGR_COUNT:
-          rc        = tuple->cell_at(cell_idx, cell);
-          attr_type = cell.attr_type();
-          //cell_flag = 4;
-          count_cells[cell_idx]++;  
-          break;
-
-          case AggrOp::AGGR_COUNT_ALL:
-          rc        = tuple->cell_at(cell_idx, cell);
-          attr_type = cell.attr_type();
-          //cell_flag = 4;
-          count_cells[cell_idx]++;  
-          break;
-
-        default: return RC::UNIMPLENMENT;
+        default:
+          LOG_WARN("unimplemented aggregation");
+          return RC::UNIMPLENMENT;
       }
     }
-    my_index++;
-  }
-  //if(cell_flag == 1)
-  {
-    for (int cell_idx = 0; cell_idx < (int)aggregations_.size(); cell_idx++) {  
-                if (count_cells[cell_idx] > 0) 
-                {  
-                     result_cells[cell_idx].set_float(sum_cells[cell_idx].get_float() / count_cells[cell_idx]);  
-                }
-               }
-  }
-  //if (cell_flag == 2)
-  {
-    for (int cell_idx = 0; cell_idx < (int)aggregations_.size(); cell_idx++) {  
-    if (aggregations_[cell_idx] == AggrOp::AGGR_MAX) {  
-        const char *sp_cell = max_cells_[cell_idx].c_str();
-        if (cell_flag==1)
-        {
-          result_cells[cell_idx].set_string(sp_cell);  
-        }
-        else if(cell_flag==2){
-          result_cells[cell_idx].set_date(max_cells[cell_idx]);  
-        }
-        else
-        result_cells[cell_idx].set_float(max_cells[cell_idx]);  
-       }  
-   }
-  }
 
-  //if (cell_flag == 3)
-  {
-    for (int cell_idx = 0; cell_idx < (int)aggregations_.size(); cell_idx++) {  
-    if (aggregations_[cell_idx] == AggrOp::AGGR_MIN) {  
-        const char *sp_cell = min_cells_[cell_idx].c_str();
-        if (cell_flag==1)
-        {
-          result_cells[cell_idx].set_string(sp_cell);  
-        }
-        else if(cell_flag==2){
-          result_cells[cell_idx].set_date(min_cells[cell_idx]);  
-        }
-        else
-        result_cells[cell_idx].set_float(min_cells[cell_idx]);  
-       }  
-   }
+    count++;
   }
-
-  //if (cell_flag == 4)
-  {
-    for (int cell_idx = 0; cell_idx < (int)aggregations_.size(); cell_idx++) {  
-    if (aggregations_[cell_idx] == AggrOp::AGGR_COUNT or aggregations_[cell_idx] == AggrOp::AGGR_COUNT_ALL) {  
-        result_cells[cell_idx].set_float(count_cells[cell_idx]);  
-       }  
-   }
+  if (rc == RC::RECORD_EOF) {
+    rc = RC::SUCCESS;
   }
-
-  if (rc == RC ::RECORD_EOF) {
-    rc = RC ::SUCCESS;
+  // update avg
+  for (int cell_idx = 0; cell_idx < result_cells.size(); cell_idx++) {
+    const AggrOp aggr = aggregations_[cell_idx];
+    if (aggr == AggrOp::AGGR_AVG) {
+      result_cells[cell_idx].set_float(result_cells[cell_idx].get_float() / count);
+      LOG_TRACE("update avg. avg=%s", result_cells[cell_idx].to_string().c_str());
+    }
   }
   result_tuple_.set_cells(result_cells);
+  LOG_TRACE("save aggregation results");
+
+  LOG_TRACE("aggregate rc=%d", rc);
   return rc;
 }
-
 
 
 
