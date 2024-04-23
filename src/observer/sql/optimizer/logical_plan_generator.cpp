@@ -121,6 +121,7 @@ RC LogicalPlanGenerator::create_plan(
       project_oper->add_child(std::move(table_oper));
     }
   }
+  //
   bool aggr_flag=false;
   for(auto field:all_fields){
     if(field.aggregation()!=AggrOp::AGGR_NONE){
@@ -139,7 +140,7 @@ RC LogicalPlanGenerator::create_plan(
   //logical_operator.swap(project_oper);
   return RC::SUCCESS;
 }
-
+//
 RC LogicalPlanGenerator::create_plan(
     FilterStmt *filter_stmt, unique_ptr<LogicalOperator> &logical_operator)
 {
