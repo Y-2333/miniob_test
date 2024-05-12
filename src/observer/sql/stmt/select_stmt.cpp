@@ -51,20 +51,6 @@ RC SelectStmt::create(Db *db, const SelectSqlNode &select_sql, Stmt *&stmt)
     return RC::INVALID_ARGUMENT;
   }
 
-  // bool is_target_query = select_sql.relations.size() == 1 &&
-  //                        select_sql.relations[0] == "aggregation_func" &&
-  //                        select_sql.attributes.size() == 3 &&
-  //                        select_sql.attributes[0].attribute_name == "id" &&
-  //                        select_sql.attributes[1].attribute_name == "num" &&
-  //                        select_sql.attributes[1].aggregation == AggrOp::AGGR_AVG &&
-  //                        select_sql.attributes[2].attribute_name == "addr";
-
-  // if (is_target_query) {
-  //   LOG_WARN("Query SELECT id, avg(num), addr FROM aggregation_func is explicitly blocked");
-  //   return RC::INVALID_ARGUMENT;
-  // }
-
-
   // collect tables in `from` statement
   std::vector<Table *> tables;
   std::unordered_map<std::string, Table *> table_map;

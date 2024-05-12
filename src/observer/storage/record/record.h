@@ -140,6 +140,26 @@ public:
     this->len_   = len;
     this->owner_ = true;
   }
+//   void Record::set_data(int offset, int len, const Value& value) {
+//     ASSERT(offset + len <= this->len_, "Offset and length exceed the record's data length");
+//     memcpy(this->data_ + offset, value.data, len);  // 更新指定区域的数据
+// }
+  void set_data(int offset, int len, const Value& value){
+    ASSERT(offset + len <= this->len_, "Offset and length exceed the record's data length");
+    switch (value.attr_type()) {
+        case INTS:
+            *reinterpret_cast<int*>(this->data_ + offset) = value.get_int();
+            break;
+        case FLOATS:
+            *reinterpret_cast<float*>(this->data_ + offset) = value.get_float();
+            break;
+        case CHARS:
+            memcpy(this->data_ + offset, value.get_string().c_str(), len);
+            break;
+        default:
+            throw std::invalid_argument("Unsupported type provided");
+}
+  }
 
   char       *data() { return this->data_; }
   const char *data() const { return this->data_; }
