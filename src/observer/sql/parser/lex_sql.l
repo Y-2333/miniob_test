@@ -103,6 +103,8 @@ INTO                                    RETURN_TOKEN(INTO);
 VALUES                                  RETURN_TOKEN(VALUES);
 DELETE                                  RETURN_TOKEN(DELETE);
 UPDATE                                  RETURN_TOKEN(UPDATE);
+JOIN                                    RETURN_TOKEN(JOIN);
+INNER                                   RETURN_TOKEN(INNER);
 SET                                     RETURN_TOKEN(SET);
 SUM                                     RETURN_TOKEN(SUM_F);
 AVG                                     RETURN_TOKEN(AVG_F);

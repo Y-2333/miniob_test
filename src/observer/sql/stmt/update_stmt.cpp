@@ -56,11 +56,12 @@ RC UpdateStmt::create(Db *db, const UpdateSqlNode &update_sql, Stmt *&stmt)
       LOG_WARN("no such field in condition. field=%s.%s.%s",db->name(),table->name(),condition.left_attr.attribute_name.c_str());
       return RC::SCHEMA_FIELD_MISSING;
     }
-  }std::string update_value_type = attr_type_to_string(update_sql.value.attr_type());
+  }
+  std::string update_value_type = attr_type_to_string(update_sql.value.attr_type());
   std::string target_field_type = attr_type_to_string(field_meta->type());
-if(update_value_type != target_field_type){// L0G ERROR("Update value does not match the data type of the target column");
-return RC::INVALID_ARGUMENT;
-}
+  if(update_value_type != target_field_type){
+  return RC::INVALID_ARGUMENT;
+  }
     //过滤算子
     std :: unordered_map < std::string , Table *> table_map ;
     table_map.insert(std::pair <std::string , Table*>( table_name , table ));

@@ -230,7 +230,7 @@ if (len ==-1){
 len = value.length();
 }
 memcpy(change_loc, data, len);
-// 标为胜页，剧回磁盘
+// 标为胜页，刷回磁盘
 frame_->mark_dirty();
 return RC::SUCCESS;
 }

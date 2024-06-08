@@ -90,6 +90,13 @@ struct ConditionSqlNode
   Value           right_value;     ///< right-hand side value if right_is_attr = FALSE
 };
 
+
+struct JoinSqlNode
+{
+  std::vector<std::string>      relations;
+  std::vector<ConditionSqlNode>   conditions;
+};
+
 /**
  * @brief 描述一个select语句
  * @ingroup SQLParser
@@ -310,6 +317,7 @@ public:
   InsertSqlNode             insertion;
   DeleteSqlNode             deletion;
   UpdateSqlNode             update;
+  //JoinSqlNode               join;
   CreateTableSqlNode        create_table;
   DropTableSqlNode          drop_table;
   CreateIndexSqlNode        create_index;
