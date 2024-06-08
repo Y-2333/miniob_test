@@ -86,7 +86,7 @@ int compare_string_float(void *arg1, int arg1_max_length, void *arg2)
 {
   const char *s1 = (const char *)arg1;
   float v2 = *(float *)arg2;
-  float v1 = std::atof(s1); // 将字符串转换为浮点数
+  float v1 = std::atof(s1); 
   float cmp = v1 - v2;
   if (cmp > EPSILON) {
     return 1;
